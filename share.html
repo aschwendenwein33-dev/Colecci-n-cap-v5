@@ -50,6 +50,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .tag-gold{background:rgba(245,196,0,0.12);color:var(--gold);border:1px solid rgba(245,196,0,0.2)}
 .tag-green{background:rgba(78,201,148,0.12);color:var(--success);border:1px solid rgba(78,201,148,0.2)}
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+
+/* EXPIRED */
+.expired-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:16px;text-align:center;padding:32px}
+.expired-icon{font-size:64px;opacity:0.6}
+.expired-title{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--danger,#e05252);letter-spacing:1px}
+.expired-sub{font-size:13px;color:var(--muted,#777);font-family:'DM Mono',monospace;line-height:1.7}
 </style>
 </head>
 <body>
@@ -106,8 +112,18 @@ document.getElementById('lightbox').addEventListener('touchend', function(e){
 
 function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-var uid = new URLSearchParams(window.location.search).get('id');
-if (!uid) {
+var params = new URLSearchParams(window.location.search);
+var uid = params.get('id');
+var exp = params.get('exp');
+
+// Check expiry
+if (exp && Date.now() > parseInt(exp)) {
+  document.getElementById('wrap').innerHTML = '<div class="expired-screen">'
+    + '<div class="expired-icon">⏱️</div>'
+    + '<div class="expired-title">Link Expirado</div>'
+    + '<div class="expired-sub">Este link venció.<br>Pedile al dueño de la colección<br>que comparta uno nuevo.</div>'
+    + '</div>';
+} else if (!uid) {
   document.getElementById('wrap').innerHTML = '<div class="not-found"><span class="not-found-icon">👕</span><div style="font-family:\'DM Mono\',monospace;color:var(--muted);font-size:13px">No se especificó ninguna camiseta.</div></div>';
 } else {
   fs.collection('camisetas').doc(uid).get().then(function(doc) {
@@ -173,6 +189,7 @@ if (!uid) {
   }).catch(function(e) {
     document.getElementById('wrap').innerHTML = '<div class="not-found"><span class="not-found-icon">❌</span><div style="font-family:\'DM Mono\',monospace;color:var(--muted);font-size:13px">Error cargando datos.</div></div>';
   });
+}
 }
 </script>
 </body>
