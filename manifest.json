@@ -1,0 +1,22 @@
+{
+  "name": "ColecciónCAP",
+  "short_name": "ColecciónCAP",
+  "description": "Colección de Camisetas Peñarol",
+  "start_url": "/Colecci-n-cap-v5/",
+  "display": "standalone",
+  "background_color": "#0e0e0e",
+  "theme_color": "#F5C400",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icono.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icono.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
