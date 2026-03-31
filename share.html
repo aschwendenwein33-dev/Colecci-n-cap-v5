@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ColecciónCAP</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#F5C400;--black:#0e0e0e;--surface:#161616;--card:#1e1e1e;--border:#2e2e2e;--text:#f0f0f0;--muted:#777;--success:#4ec994;--danger:#e05252;--radius:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px 40px}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(-55deg,transparent,transparent 38px,rgba(245,196,0,0.022) 38px,rgba(245,196,0,0.022) 40px);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;width:100%;max-width:520px;display:flex;flex-direction:column;gap:20px}
+.brand{display:flex;align-items:center;gap:10px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.brand-dot{width:36px;height:36px;background:var(--gold);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 16px rgba(245,196,0,0.35);flex-shrink:0}
+.brand-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--gold)}
+.brand-sub{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.photo-box{aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:32px;cursor:pointer;transition:transform 0.2s}
+.photo-box:hover{transform:scale(1.03)}
+.photo-box.main{grid-column:1/-1;aspect-ratio:16/9}
+.photo-box img{width:100%;height:100%;object-fit:cover}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.jersey-id{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.jersey-name{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1.1;color:var(--text);margin-bottom:14px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 13px}
+.field .lbl{font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.field .val{font-size:14px;font-weight:700;color:var(--text)}
+.field.gold .val{color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:20px}
+.field.full{grid-column:1/-1}
+.comment{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px;font-size:13px;line-height:1.6;color:var(--muted)}
+.footer{text-align:center;font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:1px;padding-top:8px}
+.tag{padding:3px 9px;border-radius:5px;font-size:11px;font-family:'DM Mono',monospace;font-weight:500;display:inline-block}
+.tag-gold{background:rgba(245,196,0,0.12);color:var(--gold);border:1px solid rgba(245,196,0,0.2)}
+.tag-green{background:rgba(78,201,148,0.12);color:var(--success);border:1px solid rgba(78,201,148,0.2)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.state{text-align:center;padding:60px 20px;font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);line-height:1.7}
+.state-icon{font-size:52px;display:block;margin-bottom:12px;opacity:0.5}
+.expired-title{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--danger);letter-spacing:1px;margin-bottom:8px}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.lightbox.open{opacity:1;pointer-events:all}
+.lightbox img{max-width:95vw;max-height:90vh;object-fit:contain;border-radius:8px}
+.lightbox-close{position:absolute;top:16px;right:16px;width:40px;height:40px;background:rgba(255,255,255,0.1);border:none;border-radius:50%;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lightbox-prev,.lightbox-next{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;background:rgba(255,255,255,0.1);border:none;border-radius:50%;color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lightbox-prev{left:12px}.lightbox-next{right:12px}
+.lightbox-counter{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:12px;color:rgba(255,255,255,0.6)}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <div class="state"><span class="state-icon">⏳</span>Cargando camiseta...</div>
+</div>
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-prev" onclick="lbNav(-1)">‹</button>
+  <img id="lbImg" src="" alt="">
+  <button class="lightbox-next" onclick="lbNav(1)">›</button>
+  <div class="lightbox-counter" id="lbCounter"></div>
+</div>
+<script>
+var lbPhotos=[], lbIdx=0;
+function openLightbox(photos,idx){ lbPhotos=photos; lbIdx=idx||0; updateLb(); document.getElementById('lightbox').classList.add('open'); }
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
+function lbNav(d){ lbIdx=(lbIdx+d+lbPhotos.length)%lbPhotos.length; updateLb(); }
+function updateLb(){ document.getElementById('lbImg').src=lbPhotos[lbIdx]; document.getElementById('lbCounter').textContent=(lbIdx+1)+' / '+lbPhotos.length; }
+document.getElementById('lightbox').addEventListener('touchstart',function(e){window._tx=e.touches[0].clientX;});
+document.getElementById('lightbox').addEventListener('touchend',function(e){var d=(window._tx||0)-e.changedTouches[0].clientX;if(Math.abs(d)>50)lbNav(d>0?1:-1);});
+
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showError(msg){ document.getElementById('wrap').innerHTML='<div class="state"><span class="state-icon">❌</span>'+msg+'</div>'; }
+function str(f){ return f&&f.stringValue||''; }
+function num(f){ return f&&(f.integerValue||f.doubleValue)||0; }
+function arr(f){ return f&&f.arrayValue&&f.arrayValue.values||[]; }
+
+var params = new URLSearchParams(window.location.search);
+var uid = params.get('id');
+var exp = params.get('exp');
+
+if (exp && Date.now() > parseInt(exp)) {
+  document.getElementById('wrap').innerHTML =
+    '<div class="state"><span class="state-icon">⏱️</span>'
+    +'<div class="expired-title">Link Expirado</div>'
+    +'<div>Este link venció.<br>Pedile al dueño que comparta uno nuevo.</div>'
+    +'</div>';
+} else if (!uid) {
+  showError('No se especificó ninguna camiseta.');
+} else {
+  var ENDPOINT = 'https://firestore.googleapis.com/v1/projects/coleccioncap/databases/(default)/documents/camisetas/' + encodeURIComponent(uid) + '?key=AIzaSyB5SVHc7ZuW3SfydN5Z3Tkf6QYGmxgugYo';
+  var timer = setTimeout(function(){ showError('No se pudo cargar. Verificá tu conexión.'); }, 10000);
+
+  fetch(ENDPOINT)
+    .then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(data) {
+      clearTimeout(timer);
+      var f = data.fields;
+      if (!f) { showError('Camiseta no encontrada.'); return; }
+
+      var photos = arr(f.photos).map(function(v){ return v.stringValue; }).filter(Boolean);
+      var photosHtml = '';
+      if (!photos.length) {
+        photosHtml = '<div class="photo-box main">👕</div>';
+      } else {
+        var ph = JSON.stringify(photos);
+        photosHtml = photos.map(function(p,i){
+          return '<div class="photo-box'+(i===0?' main':'')+'" onclick=\'openLightbox('+ph+','+i+')\' ><img src="'+p+'" alt=""></div>';
+        }).join('');
+      }
+
+      var version = str(f.version);
+      var edicionEspecial = str(f.edicionEspecial);
+      var edicionDesc = str(f.edicionDesc);
+      var jugador = str(f.jugador);
+      var numero = str(f.numero);
+      var jugStr = [numero?'#'+numero:'', jugador].filter(Boolean).join(' · ');
+
+      var tagsHtml = '';
+      if (version) tagsHtml += '<span class="tag tag-gold">'+escHtml(version)+'</span>';
+      if (edicionEspecial==='si') tagsHtml += '<span class="tag tag-green">Ed. Especial</span>';
+
+      var fieldsHtml = '';
+      var anio=str(f.anio), modelo=str(f.modelo), talle=str(f.talle), mangas=str(f.mangas);
+      var torneo=str(f.torneo), estado=str(f.estado), valor=num(f.valor);
+      if (anio) fieldsHtml += '<div class="field"><div class="lbl">Año</div><div class="val">'+escHtml(anio)+'</div></div>';
+      if (modelo) fieldsHtml += '<div class="field"><div class="lbl">Modelo</div><div class="val">'+escHtml(modelo)+'</div></div>';
+      if (talle) fieldsHtml += '<div class="field"><div class="lbl">Talle</div><div class="val">'+escHtml(talle)+'</div></div>';
+      if (mangas) fieldsHtml += '<div class="field"><div class="lbl">Mangas</div><div class="val">'+escHtml(mangas)+'</div></div>';
+      if (torneo) fieldsHtml += '<div class="field"><div class="lbl">Torneo</div><div class="val">'+escHtml(torneo)+'</div></div>';
+      if (estado) fieldsHtml += '<div class="field"><div class="lbl">Estado</div><div class="val">'+escHtml(estado)+'</div></div>';
+      if (jugStr) fieldsHtml += '<div class="field full"><div class="lbl">Jugador</div><div class="val">'+escHtml(jugStr)+'</div></div>';
+      if (edicionEspecial==='si'&&edicionDesc) fieldsHtml += '<div class="field full"><div class="lbl">Edición especial</div><div class="val">'+escHtml(edicionDesc)+'</div></div>';
+      if (valor) fieldsHtml += '<div class="field gold"><div class="lbl">Valor estimado</div><div class="val">USD '+valor.toLocaleString()+'</div></div>';
+
+      var comentarios = str(f.comentarios);
+      var commentHtml = comentarios ? '<div class="comment"><strong style="color:var(--muted);font-size:10px;font-family:\'DM Mono\',monospace;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Comentarios</strong>'+escHtml(comentarios)+'</div>' : '';
+
+      var id = str(f.id)||uid;
+      document.title = 'CAP · ' + id;
+      document.getElementById('wrap').innerHTML =
+        '<div class="brand"><div class="brand-dot">🏆</div><div><div class="brand-name">ColecciónCAP</div><div class="brand-sub">Colección de Camisetas Peñarol</div></div></div>'
+        +'<div class="photos">'+photosHtml+'</div>'
+        +'<div class="card">'
+        +'<div class="jersey-id">📡 '+escHtml(id)+'</div>'
+        +'<div class="jersey-name">'+escHtml(torneo||version||'Peñarol')+'</div>'
+        +(tagsHtml?'<div class="tags">'+tagsHtml+'</div>':'')
+        +'<div class="fields">'+fieldsHtml+'</div>'
+        +'</div>'
+        +commentHtml
+        +'<div class="footer">ColecciónCAP · Peñarol · Historia aurinegra</div>';
+    })
+    .catch(function(e){ clearTimeout(timer); showError('Error al cargar: '+e.message); });
+}
+</script>
+</body>
+</html>
